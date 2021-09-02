@@ -11,16 +11,14 @@ services:
     command: yarn start:dev
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/node_modules
     depends_on:
       - database
 
   database:
-    container_name: help_db
+    container_name: db
     image: mysql
     restart: always
     environment:
-      MYSQL_USER: ${MYSQL_USER}
       MYSQL_DATABASE: ${MYSQL_DB_NAME}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
