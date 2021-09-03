@@ -32,13 +32,13 @@ export class Cause {
   type: Type;
 
   @Column('timestamp')
-  expired_at: Date;
+  expiredAt: Date;
 
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updatedAt: Date;
 
   @ManyToOne(() => Organization, (organization) => organization.causes)
   organization: Organization;

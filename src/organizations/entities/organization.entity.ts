@@ -1,9 +1,12 @@
 import { Cause } from 'src/causes/entities/cause.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -17,13 +20,13 @@ export class Organization {
   name: string;
 
   @Column({ length: 11 })
-  phone_number: string;
-
-  @Column()
-  password: string;
+  phoneNumber: string;
 
   @Column({ length: 8 })
   cep: string;
+
+  @Column()
+  city: string;
 
   @Column()
   district: string;
@@ -31,18 +34,19 @@ export class Organization {
   @Column({ length: 14 })
   number: string;
 
-  @Column({ type: 'boolean', default: false })
-  is_approved: boolean;
-
-  @Column('timestamp')
-  email_verified_at: Date;
+  @Column({ type: 'boolean', default: true })
+  isApproved: boolean;
 
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updatedAt: Date;
 
   @OneToMany(() => Cause, (cause) => cause.organization)
   causes: Cause[];
+
+  @OneToOne(() => User)
+  @JoinColumn()
+  user: User;
 }
