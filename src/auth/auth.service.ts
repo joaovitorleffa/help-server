@@ -1,6 +1,6 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserType } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 
@@ -11,13 +11,22 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(authLoginDto: AuthLoginDto) {
-    Logger.warn('teste');
-    const user = await this.validateUser(authLoginDto);
+  async personLogin(authLoginDto: AuthLoginDto) {
+    const user = await this.validateUser(authLoginDto, UserType.PERSON);
+    return this.sign(user);
+  }
 
+  async organizationLogin(authLoginDto: AuthLoginDto) {
+    const user = await this.validateUser(authLoginDto, UserType.ORGANIZATION);
+    return this.sign(user);
+  }
+
+  sign(user: User) {
     const payload = {
       userId: user.id,
     };
+
+    console.log(this.jwtService.sign(payload));
 
     return {
       user,
@@ -25,9 +34,12 @@ export class AuthService {
     };
   }
 
-  async validateUser(authLoginDto: AuthLoginDto): Promise<User> {
+  async validateUser(
+    authLoginDto: AuthLoginDto,
+    userType: UserType,
+  ): Promise<User> {
     const { email, password } = authLoginDto;
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmail(email, userType);
 
     if (!(await user?.validatePassword(password))) {
       throw new UnauthorizedException();

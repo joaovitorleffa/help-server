@@ -6,8 +6,13 @@ import { AuthLoginDto } from './dto/auth-login.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-  async login(@Body() authLoginDto: AuthLoginDto) {
-    return this.authService.login(authLoginDto);
+  @Post('organization/login')
+  async organizationLogin(@Body() authLoginDto: AuthLoginDto) {
+    return this.authService.organizationLogin(authLoginDto);
+  }
+
+  @Post('person/login')
+  async personLogin(@Body() authLoginDto: AuthLoginDto) {
+    return this.authService.personLogin(authLoginDto);
   }
 }
