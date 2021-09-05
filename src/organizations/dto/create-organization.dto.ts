@@ -1,27 +1,29 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmailAlreadyExists } from 'src/users/decorators/validation.decorator';
 
 export class CreateOrganizationDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'fill_name' })
   name: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'invalid_email' })
+  @IsEmailAlreadyExists({ message: 'unique_email' })
   email: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'fill_password' })
   password: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'fill_phone_number' })
   phoneNumber: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'fill_cep' })
   cep: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'fill_city' })
   city: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'fill_district' })
   district: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'fill_number' })
   number: string;
 }
