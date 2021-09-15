@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 
@@ -7,6 +13,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('organization/login')
+  @UseInterceptors(ClassSerializerInterceptor)
   async organizationLogin(@Body() authLoginDto: AuthLoginDto) {
     return this.authService.organizationLogin(authLoginDto);
   }

@@ -1,5 +1,6 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { OrganizationsService } from 'src/organizations/organizations.service';
 import { User, UserType } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
@@ -8,6 +9,7 @@ import { AuthLoginDto } from './dto/auth-login.dto';
 export class AuthService {
   constructor(
     private userService: UsersService,
+    private organizationsService: OrganizationsService,
     private jwtService: JwtService,
   ) {}
 
@@ -18,15 +20,15 @@ export class AuthService {
 
   async organizationLogin(authLoginDto: AuthLoginDto) {
     const user = await this.validateUser(authLoginDto, UserType.ORGANIZATION);
-    return this.sign(user);
+    const signResponse = this.sign(user);
+    const organization = await this.organizationsService.findByUserId(user.id);
+    return { organization, ...signResponse };
   }
 
   sign(user: User) {
     const payload = {
       userId: user.id,
     };
-
-    console.log(this.jwtService.sign(payload));
 
     return {
       user,

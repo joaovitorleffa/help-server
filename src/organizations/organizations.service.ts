@@ -57,4 +57,8 @@ export class OrganizationsService {
 
     return organization;
   }
+
+  async findByUserId(userId: number) {
+    return this.organizationRepository.findOne({ where: { user: userId } });
+  }
 }
