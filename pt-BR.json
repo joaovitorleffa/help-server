@@ -1,0 +1,12 @@
+{
+  "validation": {
+    "fill_name": "Preencha o nome",
+    "fill_password": "Informa a senha",
+    "invalid_email": "Informe um e-mail válido",
+    "fill_phone_number": "Preencha o número de celular",
+    "fill_cep": "Informe o CEP",
+    "fill_city": "Informe a cidade",
+    "fill_district": "Informe o bairro",
+    "fill_number": "Informe o número"
+  }
+}
