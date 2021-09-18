@@ -19,6 +19,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 const storage = {
   storage: diskStorage({
@@ -36,17 +38,18 @@ const storage = {
 };
 
 @Controller('organizations')
+@UseGuards(RolesGuard)
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
+  @UseInterceptors(ClassSerializerInterceptor)
   create(@Body() createOrganizationDto: CreateOrganizationDto) {
     return this.organizationsService.create(createOrganizationDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('edit/profile-image')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file', storage))
   async updateProfileImage(
     @UploadedFile() file: Express.Multer.File,
@@ -57,13 +60,15 @@ export class OrganizationsController {
     return this.organizationsService.updateProfileImage(id, file.filename);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put('edit')
+  @Roles('ong')
+  @UseGuards(JwtAuthGuard)
   async update(
     @Body() updateOrganizationDto: UpdateOrganizationDto,
     @Request() req,
   ) {
     const { user } = req;
+    console.log(user);
     const { id } = await this.organizationsService.findByUserId(user.userId);
     return this.organizationsService.updateOne(id, updateOrganizationDto);
   }

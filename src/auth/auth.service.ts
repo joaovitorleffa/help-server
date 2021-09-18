@@ -28,6 +28,8 @@ export class AuthService {
   sign(user: User) {
     const payload = {
       userId: user.id,
+      email: user.email,
+      userType: user.userType,
     };
 
     return {
