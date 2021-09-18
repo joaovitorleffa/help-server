@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from './entities/organization.entity';
 import { User, UserType } from 'src/users/entities/user.entity';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
 @Injectable()
 export class OrganizationsService {
@@ -60,5 +62,13 @@ export class OrganizationsService {
 
   async findByUserId(userId: number) {
     return this.organizationRepository.findOne({ where: { user: userId } });
+  }
+
+  async updateProfileImage(id: number, profileImage: string) {
+    await this.organizationRepository.update(id, { profileImage });
+  }
+
+  async updateOne(id: number, organization: UpdateOrganizationDto) {
+    await this.organizationRepository.update(id, organization);
   }
 }

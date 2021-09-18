@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { Cause } from 'src/causes/entities/cause.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -18,6 +19,16 @@ export class Organization {
 
   @Column()
   name: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Transform(
+    ({ value }) =>
+      `${process.env.BASE_URL}:${process.env.SERVER_PORT}/organization/images/${value}`,
+  )
+  @Column({ nullable: true })
+  profileImage: string;
 
   @Column({ length: 11 })
   phoneNumber: string;

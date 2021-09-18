@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import { ValidationPipe } from '@nestjs/common';
-
 import { AppModule } from './app.module';
 
 async function bootstrap() {

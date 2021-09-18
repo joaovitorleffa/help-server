@@ -9,11 +9,16 @@ import { UsersModule } from './users/users.module';
 import { CausesModule } from './causes/causes.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { IsEmailAlreadyExistsConstraint } from './users/decorators/validation.decorator';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
     }),
     TypeOrmModule.forRoot(),
     CausesModule,
