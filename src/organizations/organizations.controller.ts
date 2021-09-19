@@ -38,7 +38,6 @@ const storage = {
 };
 
 @Controller('organizations')
-@UseGuards(RolesGuard)
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
@@ -49,27 +48,31 @@ export class OrganizationsController {
   }
 
   @Patch('edit/profile-image')
+  @Roles('organization')
+  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file', storage))
   async updateProfileImage(
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
-    const { user } = req;
-    const { id } = await this.organizationsService.findByUserId(user.userId);
-    return this.organizationsService.updateProfileImage(id, file.filename);
+    return this.organizationsService.updateProfileImage(
+      req.user.userId,
+      file.filename,
+    );
   }
 
   @Put('edit')
-  @Roles('ong')
+  @Roles('organization')
+  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   async update(
     @Body() updateOrganizationDto: UpdateOrganizationDto,
     @Request() req,
   ) {
-    const { user } = req;
-    console.log(user);
-    const { id } = await this.organizationsService.findByUserId(user.userId);
-    return this.organizationsService.updateOne(id, updateOrganizationDto);
+    return this.organizationsService.updateOne(
+      req.user.id,
+      updateOrganizationDto,
+    );
   }
 }

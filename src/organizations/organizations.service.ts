@@ -7,6 +7,8 @@ import { User, UserType } from 'src/users/entities/user.entity';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
+import { unlink } from 'fs/promises';
+
 @Injectable()
 export class OrganizationsService {
   constructor(
@@ -63,8 +65,16 @@ export class OrganizationsService {
     return this.organizationRepository.findOne({ where: { user: userId } });
   }
 
-  async updateProfileImage(id: number, profileImage: string) {
-    await this.organizationRepository.update(id, { profileImage });
+  async updateProfileImage(userId: number, fileName: string) {
+    const { id, profileImage } = await this.findByUserId(userId);
+    if (profileImage) {
+      try {
+        await unlink(`./uploads/organization/images/${profileImage}`);
+      } catch (err) {
+        throw err;
+      }
+    }
+    await this.organizationRepository.update(id, { profileImage: fileName });
   }
 
   async updateOne(id: number, organization: UpdateOrganizationDto) {
