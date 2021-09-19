@@ -61,6 +61,10 @@ export class OrganizationsService {
     return organization;
   }
 
+  async findById(id: number) {
+    return this.organizationRepository.findOneOrFail(id);
+  }
+
   async findByUserId(userId: number) {
     return this.organizationRepository.findOne({ where: { user: userId } });
   }
@@ -77,7 +81,8 @@ export class OrganizationsService {
     await this.organizationRepository.update(id, { profileImage: fileName });
   }
 
-  async updateOne(id: number, organization: UpdateOrganizationDto) {
+  async updateOne(userId: number, organization: UpdateOrganizationDto) {
+    const { id } = await this.findByUserId(userId);
     await this.organizationRepository.update(id, organization);
   }
 }

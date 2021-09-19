@@ -10,9 +10,8 @@ import {
   Get,
   Put,
   Patch,
+  Param,
 } from '@nestjs/common';
-import path = require('path');
-import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
@@ -21,21 +20,7 @@ import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-
-const storage = {
-  storage: diskStorage({
-    destination: './uploads/organization/images',
-    filename: (req, file, cb) => {
-      const date = new Date();
-      const fileName =
-        path.parse(file.originalname).name.replace(/\s/g, '') +
-        '-' +
-        date.toISOString();
-      const extension = path.parse(file.originalname).ext;
-      cb(null, `${fileName}${extension}`);
-    },
-  }),
-};
+import { storage } from 'src/configs/storage';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -47,32 +32,44 @@ export class OrganizationsController {
     return this.organizationsService.create(createOrganizationDto);
   }
 
+  @Get('/profile')
+  @Roles('organization')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  show(@Request() req) {
+    const { userId } = req.user;
+    return this.organizationsService.findByUserId(userId);
+  }
+
   @Patch('edit/profile-image')
   @Roles('organization')
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file', storage))
+  @UseInterceptors(FileInterceptor('file', storage), ClassSerializerInterceptor)
   async updateProfileImage(
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
-    return this.organizationsService.updateProfileImage(
+    await this.organizationsService.updateProfileImage(
       req.user.userId,
       file.filename,
     );
+    return this.organizationsService.findByUserId(req.user.userId);
   }
 
   @Put('edit')
   @Roles('organization')
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   async update(
     @Body() updateOrganizationDto: UpdateOrganizationDto,
     @Request() req,
   ) {
-    return this.organizationsService.updateOne(
-      req.user.id,
+    await this.organizationsService.updateOne(
+      req.user.userId,
       updateOrganizationDto,
     );
+    return this.organizationsService.findByUserId(req.user.userId);
   }
 }
