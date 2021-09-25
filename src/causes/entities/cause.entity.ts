@@ -32,7 +32,7 @@ export class Cause {
   type: Type;
 
   @Column('timestamp')
-  expiredAt: Date;
+  endAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

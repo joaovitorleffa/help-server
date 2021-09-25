@@ -23,8 +23,13 @@ export class CausesController {
   @Roles('organization')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  create(@Body() createCauseDto: CreateCauseDto) {
-    return this.causesService.create(createCauseDto);
+  create(@Body() createCauseDto: CreateCauseDto, @Request() req) {
+    const { organizationId } = req.user;
+    console.log(organizationId);
+    return this.causesService.create({
+      ...createCauseDto,
+      organization: organizationId,
+    });
   }
 
   @Get()

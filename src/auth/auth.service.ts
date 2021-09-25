@@ -15,21 +15,28 @@ export class AuthService {
 
   async personLogin(authLoginDto: AuthLoginDto) {
     const user = await this.validateUser(authLoginDto, UserType.PERSON);
-    return this.sign(user);
+    return this.sign(user, UserType.PERSON, 1);
   }
 
   async organizationLogin(authLoginDto: AuthLoginDto) {
     const user = await this.validateUser(authLoginDto, UserType.ORGANIZATION);
-    const signResponse = this.sign(user);
     const organization = await this.organizationsService.findByUserId(user.id);
+    const signResponse = this.sign(
+      user,
+      UserType.ORGANIZATION,
+      organization.id,
+    );
     return { organization, ...signResponse };
   }
 
-  sign(user: User) {
+  sign(user: User, type: UserType, actorId: number) {
     const payload = {
       userId: user.id,
       email: user.email,
       userType: user.userType,
+      ...(type === UserType.ORGANIZATION
+        ? { organizationId: actorId }
+        : { personId: actorId }),
     };
 
     return {
