@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cause } from './entities/cause.entity';
 import { CreateCauseDto } from './dto/create-cause.dto';
 import { Organization } from 'src/organizations/entities/organization.entity';
+import { PaginationOptions } from 'src/pagination/pagination.options.interface';
+import { Pagination } from 'src/pagination';
 
 @Injectable()
 export class CausesService {
@@ -23,9 +25,19 @@ export class CausesService {
     return this.causeRepository.find();
   }
 
-  findByOrganization(organizationId: number) {
-    return this.causeRepository.find({
+  async findByOrganization(organizationId: number, options: PaginationOptions) {
+    const { limit, page } = options;
+
+    const [results, total] = await this.causeRepository.findAndCount({
+      take: limit,
+      skip: (page - 1) * limit,
       where: { organization: organizationId },
+    });
+
+    return new Pagination<Cause>({
+      results,
+      total,
+      current_page: page,
     });
   }
 }
