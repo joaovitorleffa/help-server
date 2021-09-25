@@ -1,42 +1,37 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Get,
+  Request,
 } from '@nestjs/common';
+
 import { CausesService } from './causes.service';
 import { CreateCauseDto } from './dto/create-cause.dto';
-import { UpdateCauseDto } from './dto/update-cause.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('causes')
 export class CausesController {
   constructor(private readonly causesService: CausesService) {}
 
   @Post()
+  @Roles('organization')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   create(@Body() createCauseDto: CreateCauseDto) {
     return this.causesService.create(createCauseDto);
   }
 
   @Get()
+  @Roles('organization')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   findAll() {
     return this.causesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.causesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCauseDto: UpdateCauseDto) {
-    return this.causesService.update(+id, updateCauseDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.causesService.remove(+id);
   }
 }

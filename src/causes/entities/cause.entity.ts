@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-enum Type {
+export enum Type {
   DONATION = 'donation',
   VOLUNTARY_WORK = 'voluntary_work',
 }

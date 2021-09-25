@@ -1,1 +1,17 @@
-export class CreateCauseDto {}
+import { IsDateString, IsEnum, IsNotEmpty } from 'class-validator';
+import { Type } from '../entities/cause.entity';
+
+export class CreateCauseDto {
+  @IsNotEmpty({ message: 'fill_title' })
+  title: string;
+
+  @IsNotEmpty({ message: 'fill_description' })
+  description: string;
+
+  @IsNotEmpty({ message: 'fill_type' })
+  @IsEnum(Type, { message: 'invalid_type' })
+  type: Type;
+
+  @IsDateString({}, { message: 'fill_end_at' })
+  endAt: string;
+}

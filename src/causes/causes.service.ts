@@ -1,26 +1,22 @@
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import { Cause } from './entities/cause.entity';
 import { CreateCauseDto } from './dto/create-cause.dto';
-import { UpdateCauseDto } from './dto/update-cause.dto';
 
 @Injectable()
 export class CausesService {
-  create(createCauseDto: CreateCauseDto) {
-    return 'This action adds a new cause';
+  constructor(
+    @InjectRepository(Cause) private causeRepository: Repository<Cause>,
+  ) {}
+
+  async create(createCauseDto: CreateCauseDto): Promise<Cause> {
+    const newCause = this.causeRepository.create(createCauseDto);
+    return await this.causeRepository.save(newCause);
   }
 
   findAll() {
-    return `This action returns all causes`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} cause`;
-  }
-
-  update(id: number, updateCauseDto: UpdateCauseDto) {
-    return `This action updates a #${id} cause`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} cause`;
+    return this.causeRepository.find();
   }
 }
