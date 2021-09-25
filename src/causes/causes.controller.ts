@@ -7,6 +7,7 @@ import {
   ClassSerializerInterceptor,
   Get,
   Request,
+  Param,
 } from '@nestjs/common';
 
 import { CausesService } from './causes.service';
@@ -25,17 +26,22 @@ export class CausesController {
   @UseInterceptors(ClassSerializerInterceptor)
   create(@Body() createCauseDto: CreateCauseDto, @Request() req) {
     const { organizationId } = req.user;
-    console.log(organizationId);
     return this.causesService.create({
       ...createCauseDto,
       organization: organizationId,
     });
   }
 
+  @Get(':id')
+  @Roles('organization')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  findByOrganizationId(@Param() params) {
+    return this.causesService.findByOrganization(params.id);
+  }
+
   @Get()
   @Roles('organization')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   findAll() {
     return this.causesService.findAll();
   }

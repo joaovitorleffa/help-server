@@ -15,14 +15,17 @@ export class CausesService {
   async create(
     createCauseDto: CreateCauseDto & { organization: Organization },
   ): Promise<Cause> {
-    console.log({ createCauseDto });
     const newCause = this.causeRepository.create(createCauseDto);
-    console.log({ newCause });
-
     return await this.causeRepository.save(newCause);
   }
 
   findAll() {
     return this.causeRepository.find();
+  }
+
+  findByOrganization(organizationId: number) {
+    return this.causeRepository.find({
+      where: { organization: organizationId },
+    });
   }
 }
