@@ -7,6 +7,7 @@ import { CreateCauseDto } from './dto/create-cause.dto';
 import { Organization } from 'src/organizations/entities/organization.entity';
 import { PaginationOptions } from 'src/pagination/pagination.options.interface';
 import { Pagination } from 'src/pagination';
+import { UpdateCauseDto } from './dto/update-cause.dto';
 
 @Injectable()
 export class CausesService {
@@ -21,8 +22,12 @@ export class CausesService {
     return await this.causeRepository.save(newCause);
   }
 
-  findAll() {
-    return this.causeRepository.find();
+  async update(id: number, updateCauseDto: UpdateCauseDto) {
+    return await this.causeRepository.update({ id }, updateCauseDto);
+  }
+
+  async findAll() {
+    return await this.causeRepository.find();
   }
 
   async findByOrganization(organizationId: number, options: PaginationOptions) {

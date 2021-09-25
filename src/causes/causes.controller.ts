@@ -18,6 +18,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Pagination } from 'src/pagination';
 import { Cause } from './entities/cause.entity';
+import { UpdateCauseDto } from './dto/update-cause.dto';
 
 @Controller('causes')
 export class CausesController {
@@ -33,6 +34,14 @@ export class CausesController {
       ...createCauseDto,
       organization: organizationId,
     });
+  }
+
+  @Post(':id')
+  @Roles('organization')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  update(@Body() updateCauseDto: UpdateCauseDto, @Param() params) {
+    return this.causesService.update(params.id, updateCauseDto);
   }
 
   @Get('self')
