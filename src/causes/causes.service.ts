@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { LessThan, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -8,6 +8,7 @@ import { Organization } from 'src/organizations/entities/organization.entity';
 import { PaginationOptions } from 'src/pagination/pagination.options.interface';
 import { Pagination } from 'src/pagination';
 import { UpdateCauseDto } from './dto/update-cause.dto';
+import { CauseOptions } from './cause.options.interface';
 
 @Injectable()
 export class CausesService {
@@ -23,6 +24,7 @@ export class CausesService {
   }
 
   async update(id: number, updateCauseDto: UpdateCauseDto) {
+    console.log(id);
     return await this.causeRepository.update({ id }, updateCauseDto);
   }
 
@@ -30,13 +32,26 @@ export class CausesService {
     return await this.causeRepository.find();
   }
 
-  async findByOrganization(organizationId: number, options: PaginationOptions) {
-    const { limit, page } = options;
+  async findByOrganization(
+    organizationId: number,
+    options: PaginationOptions & CauseOptions,
+  ) {
+    const { limit, page, situation, type } = options;
 
     const [results, total] = await this.causeRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,
-      where: { organization: organizationId },
+      where: {
+        organization: organizationId,
+        ...(type !== 'all' && { type }),
+        ...(situation !== 'all' && {
+          endAt:
+            situation === 'progress'
+              ? MoreThanOrEqual(new Date())
+              : LessThan(new Date()),
+        }),
+      },
+      order: { endAt: 'DESC' },
     });
 
     return new Pagination<Cause>({

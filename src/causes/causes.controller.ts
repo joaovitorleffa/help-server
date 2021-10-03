@@ -9,6 +9,7 @@ import {
   Request,
   Param,
   Query,
+  Put,
 } from '@nestjs/common';
 
 import { CausesService } from './causes.service';
@@ -36,7 +37,7 @@ export class CausesController {
     });
   }
 
-  @Post(':id')
+  @Put(':id')
   @Roles('organization')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -54,9 +55,13 @@ export class CausesController {
     const { organizationId } = req.user;
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
+    const situation = query.situation ?? 'all';
+    const type = query.type ?? 'all';
     return this.causesService.findByOrganization(organizationId, {
       page,
       limit,
+      situation,
+      type,
     });
   }
 
