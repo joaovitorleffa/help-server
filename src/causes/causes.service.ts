@@ -24,7 +24,6 @@ export class CausesService {
   }
 
   async update(id: number, updateCauseDto: UpdateCauseDto) {
-    console.log(id);
     return await this.causeRepository.update({ id }, updateCauseDto);
   }
 
