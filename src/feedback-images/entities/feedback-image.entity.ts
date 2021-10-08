@@ -16,7 +16,7 @@ export class FeedbackImage {
 
   @Transform(({ value }) =>
     value
-      ? `${process.env.BASE_URL}:${process.env.SERVER_PORT}/cause/feedback/images/${value}`
+      ? `${process.env.BASE_URL}:${process.env.SERVER_PORT}/causes/feedback/${value}`
       : null,
   )
   @Column()

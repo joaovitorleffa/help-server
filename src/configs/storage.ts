@@ -1,19 +1,27 @@
 import path = require('path');
 import { diskStorage } from 'multer';
 
+const editFileName = (req, file, cb) => {
+  const date = new Date();
+  const fileNameTrim = file.originalname.trim();
+  const fileName =
+    path.parse(fileNameTrim).name.replace(/\s/g, '') + '-' + date.toISOString();
+  const extension = path.parse(fileNameTrim).ext;
+  cb(null, `${fileName}${extension}`);
+};
+
 const storage = {
   storage: diskStorage({
     destination: './uploads/organization/images',
-    filename: (req, file, cb) => {
-      const date = new Date();
-      const fileName =
-        path.parse(file.originalname).name.replace(/\s/g, '') +
-        '-' +
-        date.toISOString();
-      const extension = path.parse(file.originalname).ext;
-      cb(null, `${fileName}${extension}`);
-    },
+    filename: editFileName,
   }),
 };
 
-export { storage };
+const causeStorage = {
+  storage: diskStorage({
+    destination: './uploads/causes/feedback',
+    filename: editFileName,
+  }),
+};
+
+export { storage, causeStorage };

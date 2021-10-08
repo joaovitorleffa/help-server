@@ -10,6 +10,7 @@ import {
   Param,
   Query,
   Put,
+  UploadedFiles,
 } from '@nestjs/common';
 
 import { CausesService } from './causes.service';
@@ -20,6 +21,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Pagination } from 'src/pagination';
 import { Cause } from './entities/cause.entity';
 import { UpdateCauseDto } from './dto/update-cause.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { causeStorage } from 'src/configs/storage';
 
 @Controller('causes')
 export class CausesController {
@@ -63,6 +66,32 @@ export class CausesController {
       situation,
       type,
     });
+  }
+
+  @Put(':causeId/add/feedback')
+  @Roles('organization')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(
+    FilesInterceptor('files', 20, {
+      storage: causeStorage.storage,
+    }),
+    ClassSerializerInterceptor,
+  )
+  async addFeedback(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() updateCauseDto: UpdateCauseDto,
+    @Param('causeId') causeId: string,
+  ) {
+    const filesName = files.map((element) => ({
+      name: element.filename,
+      cause: causeId,
+    }));
+
+    return await this.causesService.addFeedback(
+      causeId,
+      filesName,
+      updateCauseDto.feedback,
+    );
   }
 
   @Get()

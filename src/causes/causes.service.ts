@@ -1,5 +1,11 @@
-import { LessThan, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import {
+  Connection,
+  LessThan,
+  MoreThan,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Cause } from './entities/cause.entity';
@@ -9,11 +15,16 @@ import { PaginationOptions } from 'src/pagination/pagination.options.interface';
 import { Pagination } from 'src/pagination';
 import { UpdateCauseDto } from './dto/update-cause.dto';
 import { CauseOptions } from './cause.options.interface';
+import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entity';
+import { UpdateFeedbackImageDto } from 'src/feedback-images/dto/update-feedback-image.dto';
 
 @Injectable()
 export class CausesService {
   constructor(
+    private connection: Connection,
     @InjectRepository(Cause) private causeRepository: Repository<Cause>,
+    @InjectRepository(FeedbackImage)
+    private feedbackImageRepository: Repository<FeedbackImage>,
   ) {}
 
   async create(
@@ -58,5 +69,43 @@ export class CausesService {
       total,
       current_page: page,
     });
+  }
+
+  async addFeedback(
+    id: string,
+    filesName: UpdateFeedbackImageDto[],
+    feedback: string,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const newFeedbackImages = this.feedbackImageRepository.create(filesName);
+
+      await queryRunner.manager.save(newFeedbackImages);
+
+      await queryRunner.manager.update(Cause, id, { feedback });
+
+      await queryRunner.commitTransaction();
+      return await this.causeRepository
+        .createQueryBuilder('cause')
+        .leftJoinAndSelect('cause.feedbackImages', 'feedbackImages')
+        .where('cause.id = :id', { id })
+        .getOne();
+    } catch (e) {
+      console.log('[addFeedback]:', e);
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'save_feedback_error',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
