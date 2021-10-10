@@ -8,7 +8,6 @@ import { jwtConstants } from './constants';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { OrganizationsModule } from 'src/organizations/organizations.module';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -21,7 +20,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -1,14 +1,16 @@
+import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entity';
 import { Organization } from 'src/organizations/entities/organization.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-enum Type {
+export enum Type {
   DONATION = 'donation',
   VOLUNTARY_WORK = 'voluntary_work',
 }
@@ -21,7 +23,7 @@ export class Cause {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ length: 450 })
   description: string;
 
   @Column({
@@ -31,8 +33,11 @@ export class Cause {
   })
   type: Type;
 
+  @Column({ length: 450 })
+  feedback: string;
+
   @Column('timestamp')
-  expiredAt: Date;
+  endAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -42,4 +47,7 @@ export class Cause {
 
   @ManyToOne(() => Organization, (organization) => organization.causes)
   organization: Organization;
+
+  @OneToMany(() => FeedbackImage, (feedbackImage) => feedbackImage.cause)
+  feedbackImages: FeedbackImage[];
 }
