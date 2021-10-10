@@ -42,6 +42,14 @@ export class CausesService {
     return await this.causeRepository.find();
   }
 
+  async show(id: string) {
+    return await this.causeRepository
+      .createQueryBuilder('cause')
+      .leftJoinAndSelect('cause.feedbackImages', 'feedbackImages')
+      .where('cause.id = :id', { id })
+      .getOne();
+  }
+
   async findByOrganization(
     organizationId: number,
     options: PaginationOptions & CauseOptions,

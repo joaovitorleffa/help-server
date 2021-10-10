@@ -55,6 +55,8 @@ export class CausesController {
     @Request() req,
     @Query() query,
   ): Promise<Pagination<Cause>> {
+    console.log('teste');
+
     const { organizationId } = req.user;
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
@@ -66,6 +68,14 @@ export class CausesController {
       situation,
       type,
     });
+  }
+
+  @Get(':id')
+  @Roles('organization')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  show(@Param() params) {
+    return this.causesService.show(params.id);
   }
 
   @Put(':causeId/add/feedback')
