@@ -2,7 +2,8 @@
 /dist
 /node_modules
 /uploads
-
+.env
+.env.development
 
 # Logs
 logs
