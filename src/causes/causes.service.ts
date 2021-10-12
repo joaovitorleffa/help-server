@@ -17,6 +17,7 @@ import { UpdateCauseDto } from './dto/update-cause.dto';
 import { CauseOptions } from './cause.options.interface';
 import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entity';
 import { UpdateFeedbackImageDto } from 'src/feedback-images/dto/update-feedback-image.dto';
+import { unlink } from 'fs/promises';
 
 @Injectable()
 export class CausesService {
@@ -97,14 +98,17 @@ export class CausesService {
       await queryRunner.manager.update(Cause, id, { feedback });
 
       await queryRunner.commitTransaction();
-      return await this.causeRepository
-        .createQueryBuilder('cause')
-        .leftJoinAndSelect('cause.feedbackImages', 'feedbackImages')
-        .where('cause.id = :id', { id })
-        .getOne();
+
+      return await this.show(id);
     } catch (e) {
       console.log('[addFeedback]:', e);
+
       await queryRunner.rollbackTransaction();
+
+      for (const image of filesName) {
+        await unlink(`./uploads/causes/feedback/${image.name}`);
+      }
+
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
