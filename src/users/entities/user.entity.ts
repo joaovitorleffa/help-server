@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  IsNull,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -35,7 +36,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt: string;
 
-  @Column('timestamp')
+  @Column({ type: 'timestamp', nullable: true })
   emailVerifiedAt: Date;
 
   @BeforeInsert()
