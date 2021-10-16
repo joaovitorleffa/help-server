@@ -22,6 +22,7 @@ import { validationSchema } from './configs/validation';
       isGlobal: true,
       load: [configuration],
       validationSchema,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
