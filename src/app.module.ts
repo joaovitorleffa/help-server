@@ -25,7 +25,7 @@ import { validationSchema } from './configs/validation';
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: join(__dirname, '../..', 'uploads'),
     }),
     TypeOrmModule.forRoot(),
     CausesModule,

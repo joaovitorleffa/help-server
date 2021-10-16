@@ -45,11 +45,15 @@ export class OrganizationsController {
   @Roles('organization')
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file', storage), ClassSerializerInterceptor)
+  @UseInterceptors(
+    FileInterceptor('file', { storage: storage.storage }),
+    ClassSerializerInterceptor,
+  )
   async updateProfileImage(
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
+    console.log({ file });
     await this.organizationsService.updateProfileImage(
       req.user.userId,
       file.filename,
