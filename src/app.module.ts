@@ -27,20 +27,7 @@ import { validationSchema } from './configs/validation';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.MYSQL_HOST,
-      port: +process.env.MYSQL_PORT,
-      username: process.env.MYSQL_USER,
-      password: process.env.MYSQL_ROOT_PASSWORD,
-      database: process.env.MYSQL_DB_NAME,
-      entities: ['dist/**/*.entity{.ts,.js}'],
-      synchronize: false,
-      migrations: ['dist/db/migrations/*.js'],
-      cli: {
-        migrationsDir: 'src/db/migrations',
-      },
-    }),
+    TypeOrmModule.forRoot(),
     CausesModule,
     OrganizationsModule,
     AuthModule,
