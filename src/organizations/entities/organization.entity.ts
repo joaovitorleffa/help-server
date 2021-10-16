@@ -24,9 +24,7 @@ export class Organization {
   description: string;
 
   @Transform(({ value }) =>
-    value
-      ? `${process.env.BASE_URL}:${process.env.SERVER_PORT}/organization/images/${value}`
-      : null,
+    value ? `${process.env.BASE_URL}/organization/images/${value}` : null,
   )
   @Column({ nullable: true })
   profileImage: string;
