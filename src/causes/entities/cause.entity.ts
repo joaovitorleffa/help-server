@@ -33,7 +33,7 @@ export class Cause {
   })
   type: Type;
 
-  @Column({ length: 450 })
+  @Column({ length: 450, nullable: true })
   feedback: string;
 
   @Column('timestamp')
@@ -45,7 +45,10 @@ export class Cause {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Organization, (organization) => organization.causes)
+  @ManyToOne(() => Organization, (organization) => organization.causes, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   organization: Organization;
 
   @OneToMany(() => FeedbackImage, (feedbackImage) => feedbackImage.cause)

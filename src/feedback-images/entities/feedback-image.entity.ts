@@ -15,9 +15,7 @@ export class FeedbackImage {
   id: number;
 
   @Transform(({ value }) =>
-    value
-      ? `${process.env.BASE_URL}:${process.env.SERVER_PORT}/causes/feedback/${value}`
-      : null,
+    value ? `${process.env.BASE_URL}/causes/feedback/${value}` : null,
   )
   @Column()
   name: string;
@@ -28,6 +26,9 @@ export class FeedbackImage {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Cause, (cause) => cause.feedbackImages)
+  @ManyToOne(() => Cause, (cause) => cause.feedbackImages, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   cause: Cause;
 }

@@ -56,7 +56,7 @@ export class Organization {
   @OneToMany(() => Cause, (cause) => cause.organization)
   causes: Cause[];
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()
   user: User;
 }
