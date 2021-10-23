@@ -15,6 +15,7 @@ import { FeedbackImagesModule } from './feedback-images/feedback-images.module';
 import { IsEmailAlreadyExistsConstraint } from './users/decorators/validation.decorator';
 import { configuration } from './configs/configuration';
 import { validationSchema } from './configs/validation';
+import { PersonsModule } from './persons/persons.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { validationSchema } from './configs/validation';
     AuthModule,
     UsersModule,
     FeedbackImagesModule,
+    PersonsModule,
   ],
   controllers: [AppController],
   providers: [AppService, IsEmailAlreadyExistsConstraint],

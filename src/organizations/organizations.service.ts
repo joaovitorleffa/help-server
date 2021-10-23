@@ -23,15 +23,7 @@ export class OrganizationsService {
   ): Promise<Organization> {
     const user = await this.createUser(createOrganizationDto);
 
-    const newOrganization = this.organizationRepository.create({
-      ...createOrganizationDto,
-      user,
-    });
-    const organization = await this.organizationRepository.save(
-      newOrganization,
-    );
-
-    return organization;
+    return await this.createOrganization(createOrganizationDto, user);
   }
 
   async createUser(createOrganizationDto: CreateOrganizationDto) {

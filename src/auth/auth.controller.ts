@@ -19,6 +19,7 @@ export class AuthController {
   }
 
   @Post('person/login')
+  @UseInterceptors(ClassSerializerInterceptor)
   async personLogin(@Body() authLoginDto: AuthLoginDto) {
     return this.authService.personLogin(authLoginDto);
   }

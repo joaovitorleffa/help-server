@@ -10,7 +10,6 @@ import {
   Get,
   Put,
   Patch,
-  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -53,7 +52,6 @@ export class OrganizationsController {
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
-    console.log({ file });
     await this.organizationsService.updateProfileImage(
       req.user.userId,
       file.filename,
