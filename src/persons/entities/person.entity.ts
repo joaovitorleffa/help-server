@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -17,6 +18,9 @@ export class Person {
   @Column()
   name: string;
 
+  @Transform(({ value }) =>
+    value ? `${process.env.BASE_URL}/persons/images/${value}` : null,
+  )
   @Column({ nullable: true })
   profileImage: string;
 

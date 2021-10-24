@@ -47,7 +47,7 @@ export class PersonsService {
     const { id, profileImage } = await this.findByUserId(userId);
     if (profileImage) {
       try {
-        await unlink(`./uploads/person/images/${profileImage}`);
+        await unlink(`./uploads/persons/images/${profileImage}`);
       } catch (err) {
         throw err;
       }

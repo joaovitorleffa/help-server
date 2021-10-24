@@ -10,6 +10,8 @@ import {
   Get,
   Put,
   Patch,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -52,6 +54,15 @@ export class OrganizationsController {
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
+    if (!file) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'File not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     await this.organizationsService.updateProfileImage(
       req.user.userId,
       file.filename,
