@@ -105,7 +105,7 @@ export class CausesController {
   }
 
   @Get()
-  @Roles('organization')
+  @Roles('person')
   @UseGuards(JwtAuthGuard, RolesGuard)
   findAll() {
     return this.causesService.findAll();

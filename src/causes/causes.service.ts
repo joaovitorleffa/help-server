@@ -19,6 +19,10 @@ import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entit
 import { UpdateFeedbackImageDto } from 'src/feedback-images/dto/update-feedback-image.dto';
 import { unlink } from 'fs/promises';
 
+type FindAll = Cause & {
+  organization: Pick<Organization, 'name'>;
+};
+
 @Injectable()
 export class CausesService {
   constructor(
@@ -39,8 +43,14 @@ export class CausesService {
     return await this.causeRepository.update({ id }, updateCauseDto);
   }
 
-  async findAll() {
-    return await this.causeRepository.find();
+  async findAll(): Promise<FindAll[]> {
+    return await this.causeRepository
+      .createQueryBuilder('cause')
+      .leftJoin('cause.organization', 'organization')
+      .addSelect('organization.name')
+      .where('cause.endAt >= :date', { date: new Date() })
+      .orderBy('cause.updatedAt', 'DESC')
+      .getMany();
   }
 
   async show(id: string) {
