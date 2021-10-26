@@ -43,14 +43,25 @@ export class CausesService {
     return await this.causeRepository.update({ id }, updateCauseDto);
   }
 
-  async findAll(): Promise<FindAll[]> {
-    return await this.causeRepository
-      .createQueryBuilder('cause')
-      .leftJoin('cause.organization', 'organization')
-      .addSelect('organization.name')
-      .where('cause.endAt >= :date', { date: new Date() })
-      .orderBy('cause.updatedAt', 'DESC')
-      .getMany();
+  async findAll({
+    page,
+    limit,
+  }: {
+    page: number;
+    limit: number;
+  }): Promise<Pagination<FindAll>> {
+    const [results, total] = await this.causeRepository.findAndCount({
+      take: limit,
+      skip: (page - 1) * limit,
+      relations: ['organization'],
+      where: { endAt: MoreThanOrEqual(new Date()) },
+    });
+
+    return new Pagination<FindAll>({
+      results,
+      total,
+      current_page: page,
+    });
   }
 
   async show(id: string) {

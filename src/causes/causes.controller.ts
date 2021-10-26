@@ -107,7 +107,9 @@ export class CausesController {
   @Get()
   @Roles('person')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findAll() {
-    return this.causesService.findAll();
+  findAll(@Query() query) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
+    return this.causesService.findAll({ page, limit });
   }
 }
