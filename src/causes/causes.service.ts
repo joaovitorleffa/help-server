@@ -43,12 +43,21 @@ export class CausesService {
     const [results, total] = await this.causeRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,
-      relations: ['organization'],
+      relations: ['organization', 'causeFavorite'],
+
       where: { endAt: MoreThanOrEqual(new Date()) },
     });
 
+    const formatted = [];
+    for (const { causeFavorite, ...rest } of results) {
+      formatted.push({
+        ...rest,
+        isFavorite: causeFavorite.length > 0,
+      });
+    }
+
     return new Pagination<FindAll>({
-      results,
+      results: formatted,
       total,
       current_page: page,
     });

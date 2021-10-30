@@ -55,4 +55,7 @@ export class Cause {
 
   @OneToMany(() => FeedbackImage, (feedbackImage) => feedbackImage.cause)
   feedbackImages: FeedbackImage[];
+
+  @ManyToMany(() => Person, (person) => person.favorites)
+  causeFavorite: Person[];
 }

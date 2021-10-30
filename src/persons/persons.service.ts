@@ -70,7 +70,12 @@ export class PersonsService {
         where: { id: personId },
       })
       .then((person) => {
-        person.favorites.push(cause);
+        const isFavorite = person.favorites.findIndex((element) => element.id === cause.id);
+        if (isFavorite >= 0) {
+          person.favorites.splice(isFavorite, 1);
+        } else {
+          person.favorites.push(cause);
+        }
         return this.personRepository.save(person);
       });
   }
@@ -79,6 +84,9 @@ export class PersonsService {
     const [result] = await this.personRepository
       .createQueryBuilder('person')
       .leftJoinAndSelect('person.favorites', 'favorites')
+      .leftJoinAndSelect('favorites.feedbackImages', 'feedbackImages')
+      .leftJoinAndSelect('favorites.organization', 'organization')
+      .orderBy('favorites.createdAt', 'DESC')
       .where({ id: personId })
       .getMany();
 

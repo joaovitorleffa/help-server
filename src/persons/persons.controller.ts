@@ -12,6 +12,7 @@ import {
   HttpStatus,
   Get,
   Param,
+  Put,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -62,7 +63,7 @@ export class PersonsController {
     return this.personsService.findByUserId(req.user.userId);
   }
 
-  @Post('favorite/cause/:id')
+  @Put('favorite/cause/:id')
   @Roles('person')
   @UseGuards(JwtAuthGuard, RolesGuard)
   async createFavorite(@Param('id') causeId: string, @Request() req) {

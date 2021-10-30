@@ -1,13 +1,13 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class FavoriteCauses1635559984438 implements MigrationInterface {
-    name = 'FavoriteCauses1635559984438'
+export class FavoriteCauses1635594737444 implements MigrationInterface {
+    name = 'FavoriteCauses1635594737444'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE \`help_db\`.\`person_favorites_cause\` (\`personId\` int NOT NULL, \`causeId\` int NOT NULL, INDEX \`IDX_ada8aed3a25e44f2961e6748ae\` (\`personId\`), INDEX \`IDX_ddc5578c2c9779e6cfcd13b8ec\` (\`causeId\`), PRIMARY KEY (\`personId\`, \`causeId\`)) ENGINE=InnoDB`);
         await queryRunner.query(`ALTER TABLE \`help_db\`.\`cause\` CHANGE \`endAt\` \`endAt\` timestamp NOT NULL`);
         await queryRunner.query(`ALTER TABLE \`help_db\`.\`person_favorites_cause\` ADD CONSTRAINT \`FK_ada8aed3a25e44f2961e6748aef\` FOREIGN KEY (\`personId\`) REFERENCES \`help_db\`.\`person\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE \`help_db\`.\`person_favorites_cause\` ADD CONSTRAINT \`FK_ddc5578c2c9779e6cfcd13b8ec6\` FOREIGN KEY (\`causeId\`) REFERENCES \`help_db\`.\`cause\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE \`help_db\`.\`person_favorites_cause\` ADD CONSTRAINT \`FK_ddc5578c2c9779e6cfcd13b8ec6\` FOREIGN KEY (\`causeId\`) REFERENCES \`help_db\`.\`cause\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

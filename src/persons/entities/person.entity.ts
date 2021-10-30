@@ -35,7 +35,18 @@ export class Person {
   @JoinColumn()
   user: User;
 
-  @ManyToMany(() => Cause, { cascade: true })
-  @JoinTable()
+  @ManyToMany(() => Cause, (cause) => cause.causeFavorite, { cascade: true })
+  @JoinTable({
+    name: 'person_favorites_cause',
+
+    joinColumn: {
+      name: 'personId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'causeId',
+      referencedColumnName: 'id',
+    },
+  })
   favorites: Cause[];
 }
