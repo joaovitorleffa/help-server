@@ -9,5 +9,6 @@ import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entit
   imports: [TypeOrmModule.forFeature([Cause, FeedbackImage])],
   controllers: [CausesController],
   providers: [CausesService],
+  exports: [CausesService],
 })
 export class CausesModule {}

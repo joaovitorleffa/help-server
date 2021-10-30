@@ -6,6 +6,7 @@ import { unlink } from 'fs/promises';
 import { Person } from './entities/person.entity';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { User, UserType } from 'src/users/entities/user.entity';
+import { CausesService } from 'src/causes/causes.service';
 
 @Injectable()
 export class PersonsService {
@@ -14,6 +15,7 @@ export class PersonsService {
     private personRepository: Repository<Person>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private causeService: CausesService,
   ) {}
 
   async create(createPersonDto: CreatePersonDto) {
@@ -57,5 +59,29 @@ export class PersonsService {
 
   async findByUserId(userId: number) {
     return this.personRepository.findOne({ where: { user: userId } });
+  }
+
+  async createFavorite(causeId: number, personId: number): Promise<Person> {
+    const cause = await this.causeService.findById(causeId);
+
+    return this.personRepository
+      .findOne({
+        relations: ['favorites'],
+        where: { id: personId },
+      })
+      .then((person) => {
+        person.favorites.push(cause);
+        return this.personRepository.save(person);
+      });
+  }
+
+  async findFavorites(personId: number) {
+    const [result] = await this.personRepository
+      .createQueryBuilder('person')
+      .leftJoinAndSelect('person.favorites', 'favorites')
+      .where({ id: personId })
+      .getMany();
+
+    return result.favorites;
   }
 }

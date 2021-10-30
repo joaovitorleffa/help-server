@@ -1,10 +1,4 @@
-import {
-  Connection,
-  LessThan,
-  MoreThan,
-  MoreThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { Connection, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -32,9 +26,7 @@ export class CausesService {
     private feedbackImageRepository: Repository<FeedbackImage>,
   ) {}
 
-  async create(
-    createCauseDto: CreateCauseDto & { organization: Organization },
-  ): Promise<Cause> {
+  async create(createCauseDto: CreateCauseDto & { organization: Organization }): Promise<Cause> {
     const newCause = this.causeRepository.create(createCauseDto);
     return await this.causeRepository.save(newCause);
   }
@@ -43,13 +35,11 @@ export class CausesService {
     return await this.causeRepository.update({ id }, updateCauseDto);
   }
 
-  async findAll({
-    page,
-    limit,
-  }: {
-    page: number;
-    limit: number;
-  }): Promise<Pagination<FindAll>> {
+  async findById(id: number): Promise<Cause> {
+    return await this.causeRepository.findOne(id);
+  }
+
+  async findAll({ page, limit }: { page: number; limit: number }): Promise<Pagination<FindAll>> {
     const [results, total] = await this.causeRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,
@@ -72,10 +62,7 @@ export class CausesService {
       .getOne();
   }
 
-  async findByOrganization(
-    organizationId: number,
-    options: PaginationOptions & CauseOptions,
-  ) {
+  async findByOrganization(organizationId: number, options: PaginationOptions & CauseOptions) {
     const { limit, page, situation, type } = options;
 
     const [results, total] = await this.causeRepository.findAndCount({
@@ -85,10 +72,7 @@ export class CausesService {
         organization: organizationId,
         ...(type !== 'all' && { type }),
         ...(situation !== 'all' && {
-          endAt:
-            situation === 'progress'
-              ? MoreThanOrEqual(new Date())
-              : LessThan(new Date()),
+          endAt: situation === 'progress' ? MoreThanOrEqual(new Date()) : LessThan(new Date()),
         }),
       },
       order: { endAt: 'DESC' },
@@ -101,11 +85,7 @@ export class CausesService {
     });
   }
 
-  async addFeedback(
-    id: string,
-    filesName: UpdateFeedbackImageDto[],
-    feedback: string,
-  ) {
+  async addFeedback(id: string, filesName: UpdateFeedbackImageDto[], feedback: string) {
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();

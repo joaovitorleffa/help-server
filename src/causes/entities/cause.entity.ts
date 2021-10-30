@@ -1,9 +1,11 @@
 import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entity';
 import { Organization } from 'src/organizations/entities/organization.entity';
+import { Person } from 'src/persons/entities/person.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,

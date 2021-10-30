@@ -51,10 +51,7 @@ export class CausesController {
   @Get('self')
   @Roles('organization')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findByOrganizationId(
-    @Request() req,
-    @Query() query,
-  ): Promise<Pagination<Cause>> {
+  findByOrganizationId(@Request() req, @Query() query): Promise<Pagination<Cause>> {
     console.log('teste');
 
     const { organizationId } = req.user;
@@ -97,11 +94,7 @@ export class CausesController {
       cause: causeId,
     }));
 
-    return await this.causesService.addFeedback(
-      causeId,
-      filesName,
-      updateCauseDto.feedback,
-    );
+    return await this.causesService.addFeedback(causeId, filesName, updateCauseDto.feedback);
   }
 
   @Get()
