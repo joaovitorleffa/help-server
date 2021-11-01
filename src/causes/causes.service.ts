@@ -44,8 +44,8 @@ export class CausesService {
       take: limit,
       skip: (page - 1) * limit,
       relations: ['organization', 'causeFavorite'],
-
-      where: { endAt: MoreThanOrEqual(new Date()) },
+      order: { endAt: 'DESC' },
+      // where: { endAt: MoreThanOrEqual(new Date()) },
     });
 
     const formatted = [];
@@ -129,5 +129,11 @@ export class CausesService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findCauseDetailsById(id: number): Promise<Cause> {
+    return await this.causeRepository.findOne(id, {
+      relations: ['organization', 'feedbackImages'],
+    });
   }
 }

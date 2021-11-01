@@ -14,9 +14,7 @@ export class FeedbackImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Transform(({ value }) =>
-    value ? `${process.env.BASE_URL}/causes/feedback/${value}` : null,
-  )
+  @Transform(({ value }) => (value ? `${process.env.BASE_URL}/causes/feedback/${value}` : null))
   @Column()
   name: string;
 

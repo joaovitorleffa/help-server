@@ -52,8 +52,6 @@ export class CausesController {
   @Roles('organization')
   @UseGuards(JwtAuthGuard, RolesGuard)
   findByOrganizationId(@Request() req, @Query() query): Promise<Pagination<Cause>> {
-    console.log('teste');
-
     const { organizationId } = req.user;
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
@@ -104,5 +102,13 @@ export class CausesController {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
     return this.causesService.findAll({ page, limit });
+  }
+
+  @Get('details/:id')
+  @Roles('person')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  getCauseDetails(@Param('id') id: string): Promise<Cause> {
+    return this.causesService.findCauseDetailsById(+id);
   }
 }

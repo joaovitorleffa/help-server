@@ -23,13 +23,11 @@ export class Organization {
   @Column({ nullable: true })
   description: string;
 
-  @Transform(({ value }) =>
-    value ? `${process.env.BASE_URL}/organization/images/${value}` : null,
-  )
+  @Transform(({ value }) => (value ? `${process.env.BASE_URL}/organization/images/${value}` : null))
   @Column({ nullable: true })
   profileImage: string;
 
-  @Column({ length: 11 })
+  @Column({ length: 13 })
   phoneNumber: string;
 
   @Column({ length: 8 })
