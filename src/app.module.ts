@@ -16,6 +16,7 @@ import { PersonsModule } from './persons/persons.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { FeedbackImagesModule } from './feedback-images/feedback-images.module';
 import { IsEmailAlreadyExistsConstraint } from './users/decorators/validation.decorator';
+import { CauseCommentsModule } from './cause-comments/cause-comments.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { IsEmailAlreadyExistsConstraint } from './users/decorators/validation.de
     UsersModule,
     FeedbackImagesModule,
     PersonsModule,
+    CauseCommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, IsEmailAlreadyExistsConstraint],

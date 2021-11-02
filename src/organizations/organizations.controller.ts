@@ -50,10 +50,7 @@ export class OrganizationsController {
     FileInterceptor('file', { storage: storage.storage }),
     ClassSerializerInterceptor,
   )
-  async updateProfileImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Request() req,
-  ) {
+  async updateProfileImage(@UploadedFile() file: Express.Multer.File, @Request() req) {
     if (!file) {
       throw new HttpException(
         {
@@ -63,10 +60,7 @@ export class OrganizationsController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    await this.organizationsService.updateProfileImage(
-      req.user.userId,
-      file.filename,
-    );
+    await this.organizationsService.updateProfileImage(req.user.userId, file.filename);
     return this.organizationsService.findByUserId(req.user.userId);
   }
 
@@ -75,14 +69,8 @@ export class OrganizationsController {
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async update(
-    @Body() updateOrganizationDto: UpdateOrganizationDto,
-    @Request() req,
-  ) {
-    await this.organizationsService.updateOne(
-      req.user.userId,
-      updateOrganizationDto,
-    );
+  async update(@Body() updateOrganizationDto: UpdateOrganizationDto, @Request() req) {
+    await this.organizationsService.updateOne(req.user.userId, updateOrganizationDto);
     return this.organizationsService.findByUserId(req.user.userId);
   }
 }

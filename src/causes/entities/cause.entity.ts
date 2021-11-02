@@ -1,3 +1,4 @@
+import { CauseComment } from 'src/cause-comments/entities/cause-comment.entity';
 import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entity';
 import { Organization } from 'src/organizations/entities/organization.entity';
 import { Person } from 'src/persons/entities/person.entity';
@@ -58,4 +59,7 @@ export class Cause {
 
   @ManyToMany(() => Person, (person) => person.favorites)
   causeFavorite: Person[];
+
+  @OneToMany(() => CauseComment, (causeComment) => causeComment.cause)
+  causeComments: CauseComment[];
 }
