@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { OrganizationsService } from 'src/organizations/organizations.service';
 import { PersonsService } from 'src/persons/persons.service';
@@ -18,6 +18,15 @@ export class AuthService {
   async personLogin(authLoginDto: AuthLoginDto) {
     const user = await this.validateUser(authLoginDto, UserType.PERSON);
     const person = await this.personService.findByUserId(user.id);
+    if (!person) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     const signResponse = this.sign(user, UserType.PERSON, person.id);
     return { person, ...signResponse };
   }
@@ -25,11 +34,16 @@ export class AuthService {
   async organizationLogin(authLoginDto: AuthLoginDto) {
     const user = await this.validateUser(authLoginDto, UserType.ORGANIZATION);
     const organization = await this.organizationsService.findByUserId(user.id);
-    const signResponse = this.sign(
-      user,
-      UserType.ORGANIZATION,
-      organization.id,
-    );
+    if (!organization) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const signResponse = this.sign(user, UserType.ORGANIZATION, organization.id);
     return { organization, ...signResponse };
   }
 
@@ -38,9 +52,7 @@ export class AuthService {
       userId: user.id,
       email: user.email,
       userType: user.userType,
-      ...(type === UserType.ORGANIZATION
-        ? { organizationId: actorId }
-        : { personId: actorId }),
+      ...(type === UserType.ORGANIZATION ? { organizationId: actorId } : { personId: actorId }),
     };
 
     return {
@@ -49,10 +61,7 @@ export class AuthService {
     };
   }
 
-  async validateUser(
-    authLoginDto: AuthLoginDto,
-    userType: UserType,
-  ): Promise<User> {
+  async validateUser(authLoginDto: AuthLoginDto, userType: UserType): Promise<User> {
     const { email, password } = authLoginDto;
     const user = await this.userService.findByEmail(email, userType);
 

@@ -36,13 +36,16 @@ export class CauseCommentsService {
   }
 
   async findOne(causeId: number, limit?: number) {
-    return await this.causeCommentRepository
-      .createQueryBuilder('comments')
-      .leftJoinAndSelect('comments.user', 'users')
-      .leftJoinAndSelect('users.organization', 'organization')
-      .leftJoinAndSelect('users.person', 'persons')
-      .where({ cause: causeId })
-      .limit(limit || undefined)
-      .getMany();
+    const [results, total] = await this.causeCommentRepository.findAndCount({
+      take: limit,
+      where: { cause: causeId },
+      relations: ['user', 'user.organization', 'user.person'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      total,
+      results,
+    };
   }
 }
