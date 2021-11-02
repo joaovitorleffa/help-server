@@ -3,12 +3,16 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  IsNull,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
+import { CauseComment } from 'src/cause-comments/entities/cause-comment.entity';
+import { Person } from 'src/persons/entities/person.entity';
+import { Organization } from 'src/organizations/entities/organization.entity';
 
 export enum UserType {
   ORGANIZATION = 'organization',
@@ -47,4 +51,13 @@ export class User {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
+
+  @OneToMany(() => CauseComment, (causeComment) => causeComment.user)
+  causeComments: CauseComment;
+
+  @OneToOne(() => Person, (person) => person.user)
+  person: Person;
+
+  @OneToOne(() => Organization, (organization) => organization.user)
+  organization: Organization;
 }

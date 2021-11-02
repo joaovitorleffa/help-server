@@ -2,7 +2,6 @@ import path = require('path');
 import { diskStorage } from 'multer';
 
 const editFileName = (req, file, cb) => {
-  console.log('editFileName', file);
   const date = new Date();
   const fileNameTrim = file.originalname.trim();
   const fileName =
@@ -18,6 +17,13 @@ const storage = {
   }),
 };
 
+const personStorage = {
+  storage: diskStorage({
+    destination: './uploads/persons/images',
+    filename: (req, file, cb) => editFileName(req, file, cb),
+  }),
+};
+
 const causeStorage = {
   storage: diskStorage({
     destination: './uploads/causes/feedback',
@@ -25,4 +31,4 @@ const causeStorage = {
   }),
 };
 
-export { storage, causeStorage };
+export { storage, personStorage, causeStorage };

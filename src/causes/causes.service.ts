@@ -1,10 +1,4 @@
-import {
-  Connection,
-  LessThan,
-  MoreThan,
-  MoreThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { Connection, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -19,6 +13,10 @@ import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entit
 import { UpdateFeedbackImageDto } from 'src/feedback-images/dto/update-feedback-image.dto';
 import { unlink } from 'fs/promises';
 
+type FindAll = Cause & {
+  organization: Pick<Organization, 'name'>;
+};
+
 @Injectable()
 export class CausesService {
   constructor(
@@ -28,9 +26,7 @@ export class CausesService {
     private feedbackImageRepository: Repository<FeedbackImage>,
   ) {}
 
-  async create(
-    createCauseDto: CreateCauseDto & { organization: Organization },
-  ): Promise<Cause> {
+  async create(createCauseDto: CreateCauseDto & { organization: Organization }): Promise<Cause> {
     const newCause = this.causeRepository.create(createCauseDto);
     return await this.causeRepository.save(newCause);
   }
@@ -39,8 +35,32 @@ export class CausesService {
     return await this.causeRepository.update({ id }, updateCauseDto);
   }
 
-  async findAll() {
-    return await this.causeRepository.find();
+  async findById(id: number): Promise<Cause> {
+    return await this.causeRepository.findOne(id);
+  }
+
+  async findAll({ page, limit }: { page: number; limit: number }): Promise<Pagination<FindAll>> {
+    const [results, total] = await this.causeRepository.findAndCount({
+      take: limit,
+      skip: (page - 1) * limit,
+      relations: ['organization', 'causeFavorite'],
+      order: { endAt: 'DESC' },
+      // where: { endAt: MoreThanOrEqual(new Date()) },
+    });
+
+    const formatted = [];
+    for (const { causeFavorite, ...rest } of results) {
+      formatted.push({
+        ...rest,
+        isFavorite: causeFavorite.length > 0,
+      });
+    }
+
+    return new Pagination<FindAll>({
+      results: formatted,
+      total,
+      current_page: page,
+    });
   }
 
   async show(id: string) {
@@ -51,10 +71,7 @@ export class CausesService {
       .getOne();
   }
 
-  async findByOrganization(
-    organizationId: number,
-    options: PaginationOptions & CauseOptions,
-  ) {
+  async findByOrganization(organizationId: number, options: PaginationOptions & CauseOptions) {
     const { limit, page, situation, type } = options;
 
     const [results, total] = await this.causeRepository.findAndCount({
@@ -64,10 +81,7 @@ export class CausesService {
         organization: organizationId,
         ...(type !== 'all' && { type }),
         ...(situation !== 'all' && {
-          endAt:
-            situation === 'progress'
-              ? MoreThanOrEqual(new Date())
-              : LessThan(new Date()),
+          endAt: situation === 'progress' ? MoreThanOrEqual(new Date()) : LessThan(new Date()),
         }),
       },
       order: { endAt: 'DESC' },
@@ -80,11 +94,7 @@ export class CausesService {
     });
   }
 
-  async addFeedback(
-    id: string,
-    filesName: UpdateFeedbackImageDto[],
-    feedback: string,
-  ) {
+  async addFeedback(id: string, filesName: UpdateFeedbackImageDto[], feedback: string) {
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
@@ -119,5 +129,11 @@ export class CausesService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findCauseDetailsById(id: number): Promise<Cause> {
+    return await this.causeRepository.findOne(id, {
+      relations: ['organization', 'feedbackImages'],
+    });
   }
 }

@@ -8,12 +8,14 @@ import { jwtConstants } from './constants';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { OrganizationsModule } from 'src/organizations/organizations.module';
+import { PersonsModule } from 'src/persons/persons.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
     OrganizationsModule,
+    PersonsModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '10000s' },

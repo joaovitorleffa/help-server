@@ -51,12 +51,7 @@ export class CausesController {
   @Get('self')
   @Roles('organization')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findByOrganizationId(
-    @Request() req,
-    @Query() query,
-  ): Promise<Pagination<Cause>> {
-    console.log('teste');
-
+  findByOrganizationId(@Request() req, @Query() query): Promise<Pagination<Cause>> {
     const { organizationId } = req.user;
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
@@ -97,17 +92,23 @@ export class CausesController {
       cause: causeId,
     }));
 
-    return await this.causesService.addFeedback(
-      causeId,
-      filesName,
-      updateCauseDto.feedback,
-    );
+    return await this.causesService.addFeedback(causeId, filesName, updateCauseDto.feedback);
   }
 
   @Get()
-  @Roles('organization')
+  @Roles('person')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findAll() {
-    return this.causesService.findAll();
+  findAll(@Query() query) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
+    return this.causesService.findAll({ page, limit });
+  }
+
+  @Get('details/:id')
+  @Roles('person')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  getCauseDetails(@Param('id') id: string): Promise<Cause> {
+    return this.causesService.findCauseDetailsById(+id);
   }
 }
