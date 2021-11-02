@@ -10,7 +10,8 @@ import {
   Get,
   Put,
   Patch,
-  Param,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -49,15 +50,17 @@ export class OrganizationsController {
     FileInterceptor('file', { storage: storage.storage }),
     ClassSerializerInterceptor,
   )
-  async updateProfileImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Request() req,
-  ) {
-    console.log({ file });
-    await this.organizationsService.updateProfileImage(
-      req.user.userId,
-      file.filename,
-    );
+  async updateProfileImage(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    if (!file) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'File not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.organizationsService.updateProfileImage(req.user.userId, file.filename);
     return this.organizationsService.findByUserId(req.user.userId);
   }
 
@@ -66,14 +69,8 @@ export class OrganizationsController {
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async update(
-    @Body() updateOrganizationDto: UpdateOrganizationDto,
-    @Request() req,
-  ) {
-    await this.organizationsService.updateOne(
-      req.user.userId,
-      updateOrganizationDto,
-    );
+  async update(@Body() updateOrganizationDto: UpdateOrganizationDto, @Request() req) {
+    await this.organizationsService.updateOne(req.user.userId, updateOrganizationDto);
     return this.organizationsService.findByUserId(req.user.userId);
   }
 }

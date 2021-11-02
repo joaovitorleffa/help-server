@@ -1,5 +1,5 @@
-import { Transform } from 'class-transformer';
 import { Cause } from 'src/causes/entities/cause.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,13 +10,12 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class FeedbackImage {
+export class CauseComment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Transform(({ value }) => (value ? `${process.env.BASE_URL}/causes/feedback/${value}` : null))
-  @Column()
-  name: string;
+  @Column({ length: 250 })
+  comment: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -24,9 +23,15 @@ export class FeedbackImage {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Cause, (cause) => cause.feedbackImages, {
+  @ManyToOne(() => Cause, (cause) => cause.causeComments, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   cause: Cause;
+
+  @ManyToOne(() => User, (user) => user.causeComments, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  user: User;
 }

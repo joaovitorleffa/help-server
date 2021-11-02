@@ -1,9 +1,12 @@
+import { CauseComment } from 'src/cause-comments/entities/cause-comment.entity';
 import { FeedbackImage } from 'src/feedback-images/entities/feedback-image.entity';
 import { Organization } from 'src/organizations/entities/organization.entity';
+import { Person } from 'src/persons/entities/person.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -33,7 +36,7 @@ export class Cause {
   })
   type: Type;
 
-  @Column({ length: 450 })
+  @Column({ length: 450, nullable: true })
   feedback: string;
 
   @Column('timestamp')
@@ -45,9 +48,18 @@ export class Cause {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Organization, (organization) => organization.causes)
+  @ManyToOne(() => Organization, (organization) => organization.causes, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   organization: Organization;
 
   @OneToMany(() => FeedbackImage, (feedbackImage) => feedbackImage.cause)
   feedbackImages: FeedbackImage[];
+
+  @ManyToMany(() => Person, (person) => person.favorites)
+  causeFavorite: Person[];
+
+  @OneToMany(() => CauseComment, (causeComment) => causeComment.cause)
+  causeComments: CauseComment[];
 }

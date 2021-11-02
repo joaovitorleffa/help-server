@@ -10,11 +10,13 @@ import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
 import { CausesModule } from './causes/causes.module';
+import { configuration } from './configs/configuration';
+import { validationSchema } from './configs/validation';
+import { PersonsModule } from './persons/persons.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { FeedbackImagesModule } from './feedback-images/feedback-images.module';
 import { IsEmailAlreadyExistsConstraint } from './users/decorators/validation.decorator';
-import { configuration } from './configs/configuration';
-import { validationSchema } from './configs/validation';
+import { CauseCommentsModule } from './cause-comments/cause-comments.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { validationSchema } from './configs/validation';
     AuthModule,
     UsersModule,
     FeedbackImagesModule,
+    PersonsModule,
+    CauseCommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, IsEmailAlreadyExistsConstraint],
