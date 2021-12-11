@@ -1,4 +1,5 @@
 import { Transform } from 'class-transformer';
+import { MaxLength } from 'class-validator';
 import { Cause } from 'src/causes/entities/cause.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -21,6 +22,7 @@ export class Organization {
   name: string;
 
   @Column({ nullable: true })
+  @MaxLength(450, { message: 'long_description' })
   description: string;
 
   @Transform(({ value }) => (value ? `${process.env.BASE_URL}/organization/images/${value}` : null))

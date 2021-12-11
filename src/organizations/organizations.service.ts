@@ -18,9 +18,7 @@ export class OrganizationsService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(
-    createOrganizationDto: CreateOrganizationDto,
-  ): Promise<Organization> {
+  async create(createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
     const user = await this.createUser(createOrganizationDto);
 
     return await this.createOrganization(createOrganizationDto, user);
@@ -39,16 +37,11 @@ export class OrganizationsService {
     return user;
   }
 
-  async createOrganization(
-    createOrganizationDto: CreateOrganizationDto,
-    user: User,
-  ) {
+  async createOrganization(createOrganizationDto: CreateOrganizationDto, user: User) {
     const data = { ...createOrganizationDto, user };
 
     const newOrganization = this.organizationRepository.create(data);
-    const organization = await this.organizationRepository.save(
-      newOrganization,
-    );
+    const organization = await this.organizationRepository.save(newOrganization);
 
     return organization;
   }
