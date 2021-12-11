@@ -101,7 +101,9 @@ export class CausesController {
   findAll(@Query() query) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
-    return this.causesService.findAll({ page, limit });
+    const situation = query.situation ?? 'all';
+    const type = query.type ?? 'all';
+    return this.causesService.findAll({ page, limit, situation, type });
   }
 
   @Get('details/:id')
