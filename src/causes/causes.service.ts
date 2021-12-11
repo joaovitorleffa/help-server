@@ -39,13 +39,23 @@ export class CausesService {
     return await this.causeRepository.findOne(id);
   }
 
-  async findAll({ page, limit }: { page: number; limit: number }): Promise<Pagination<FindAll>> {
+  async findAll({
+    page,
+    limit,
+    type,
+    situation,
+  }: PaginationOptions & CauseOptions): Promise<Pagination<FindAll>> {
     const [results, total] = await this.causeRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,
       relations: ['organization', 'causeFavorite'],
       order: { endAt: 'DESC' },
-      // where: { endAt: MoreThanOrEqual(new Date()) },
+      where: {
+        ...(type !== 'all' && { type }),
+        ...(situation !== 'all' && {
+          endAt: situation === 'progress' ? MoreThanOrEqual(new Date()) : LessThan(new Date()),
+        }),
+      },
     });
 
     const formatted = [];
