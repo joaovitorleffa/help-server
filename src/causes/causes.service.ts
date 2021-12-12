@@ -143,7 +143,7 @@ export class CausesService {
 
   async findCauseDetailsById(id: number): Promise<Cause> {
     return await this.causeRepository.findOne(id, {
-      relations: ['organization', 'feedbackImages'],
+      relations: ['organization', 'feedbackImages', 'organization.user'],
     });
   }
 }
