@@ -98,12 +98,13 @@ export class CausesController {
   @Get()
   @Roles('person')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findAll(@Query() query) {
+  findAll(@Query() query, @Request() req) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
     const situation = query.situation ?? 'all';
     const type = query.type ?? 'all';
-    return this.causesService.findAll({ page, limit, situation, type });
+
+    return this.causesService.findAll(req.user.personId, { page, limit, situation, type });
   }
 
   @Get('details/:id')
