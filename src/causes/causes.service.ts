@@ -39,12 +39,10 @@ export class CausesService {
     return await this.causeRepository.findOne(id);
   }
 
-  async findAll({
-    page,
-    limit,
-    type,
-    situation,
-  }: PaginationOptions & CauseOptions): Promise<Pagination<FindAll>> {
+  async findAll(
+    personId: number,
+    { page, limit, type, situation }: PaginationOptions & CauseOptions,
+  ): Promise<Pagination<FindAll>> {
     const [results, total] = await this.causeRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,
@@ -60,9 +58,10 @@ export class CausesService {
 
     const formatted = [];
     for (const { causeFavorite, ...rest } of results) {
+      console.log(causeFavorite);
       formatted.push({
         ...rest,
-        isFavorite: causeFavorite.length > 0,
+        isFavorite: !!causeFavorite.length && causeFavorite.some((cause) => cause.id === personId),
       });
     }
 
